@@ -136,3 +136,7 @@ Future roleCheck(BuildContext context) async {
     );
   }
 }
+
+Future<void> logout(BuildContext context) async {
+  await _auth.signOut();
+}

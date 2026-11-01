@@ -1,6 +1,8 @@
-import 'package:dummy_project/services/data_update_service.dart' as profileFunctions;
+import 'package:dummy_project/services/data_update_service.dart'
+    as profileFunctions;
 import 'package:dummy_project/widgets/buttons.dart';
 import 'package:dummy_project/widgets/custom_text_field.dart';
+import 'package:dummy_project/widgets/responsive_layout.dart';
 import 'package:flutter/material.dart';
 
 class ProfileDetailPage extends StatefulWidget {
@@ -55,71 +57,76 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.title,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 12),
-            customTextField(
-              controller: controller,
-              readOnly: isRole,
-              keyboardType: widget.field == 'Phone'
-                  ? TextInputType.phone
-                  : TextInputType.text,
-              hint: 'Enter ${widget.title}',
-              decoration: InputDecoration(
-                hintText: 'Enter ${widget.title}',
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: ResponsiveContent(
+            maxWidth: 600,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.title,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ),
-            SizedBox(height: 25),
-            customButton(
-              onTap: isUpdating
-                  ? null
-                  : () async {
-                      setState(() {
-                        isUpdating = true;
-                      });
-                      final success = await profileFunctions.updateProfile(
-                        uid: widget.uid,
-                        field: widget.field,
-                        value: controller.text,
-                        onError: (message) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(message)));
-                        },
-                      );
-                      if (!mounted) return;
-                      if (success) {
-                        Navigator.pop(context, true);
-                      } else {
-                        setState(() {
-                          isUpdating = false;
-                        });
-                      }
-                    },
-              child: isUpdating
-                  ? CircularProgressIndicator(color: Colors.white)
-                  : Text(
-                      'Update',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                SizedBox(height: 12),
+                customTextField(
+                  controller: controller,
+                  readOnly: isRole,
+                  keyboardType: widget.field == 'Phone'
+                      ? TextInputType.phone
+                      : TextInputType.text,
+                  hint: 'Enter ${widget.title}',
+                  decoration: InputDecoration(
+                    hintText: 'Enter ${widget.title}',
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                  ),
+                ),
+                SizedBox(height: 25),
+                customButton(
+                  onTap: isUpdating
+                      ? null
+                      : () async {
+                          setState(() {
+                            isUpdating = true;
+                          });
+                          final success = await profileFunctions.updateProfile(
+                            uid: widget.uid,
+                            field: widget.field,
+                            value: controller.text,
+                            onError: (message) {
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(SnackBar(content: Text(message)));
+                            },
+                          );
+                          if (!mounted) return;
+                          if (success) {
+                            Navigator.pop(context, true);
+                          } else {
+                            setState(() {
+                              isUpdating = false;
+                            });
+                          }
+                        },
+                  child: isUpdating
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'Update',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -12,22 +12,22 @@ class MyOrdersPage extends StatelessWidget {
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
       case 'delivered':
-        return Color(0xFF16803D);
+        return Color.fromARGB(255, 22, 128, 61);
       case 'pending':
-        return Color(0xFFB77900);
+        return Color.fromARGB(255, 183, 121, 0);
       case 'processing':
-        return Color(0xFF2563EB);
+        return Color.fromARGB(255, 37, 99, 235);
       case 'cancelled':
-        return Color(0xFFDC2626);
+        return Color.fromARGB(255, 220, 38, 38);
       default:
-        return Color(0xFF777777);
+        return Color.fromARGB(255, 119, 119, 119);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF8F8F8),
+      backgroundColor: Color.fromARGB(255, 248, 248, 248),
       body: SafeArea(
         child: ResponsiveLayout.builder(
           breakpoints: ResponsiveBreakpoints(tablet: 600, desktop: 800),
@@ -44,7 +44,9 @@ class MyOrdersPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border(
-                      bottom: BorderSide(color: Color(0xFFEEEEEE)),
+                      bottom: BorderSide(
+                        color: Color.fromARGB(255, 238, 238, 238),
+                      ),
                     ),
                   ),
                   child: Row(
@@ -55,7 +57,7 @@ class MyOrdersPage extends StatelessWidget {
                         height: 42,
                         iconSize: 21,
                         borderRadius: 11,
-                        color: Color(0xFFF5F5F5),
+                        color: Color.fromARGB(255, 245, 245, 245),
                         onTap: () {
                           if (Navigator.canPop(context)) {
                             Navigator.pop(context);
@@ -131,7 +133,7 @@ class MyOrdersPage extends StatelessWidget {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
                           child: CircularProgressIndicator(
-                            color: Color(0xFFFFC107),
+                            color: Color.fromARGB(255, 255, 193, 7),
                           ),
                         );
                       }
@@ -160,13 +162,13 @@ class MyOrdersPage extends StatelessWidget {
                               Container(
                                 padding: EdgeInsets.all(25),
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFFFF5D6),
+                                  color: Color.fromARGB(255, 255, 245, 214),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   Icons.shopping_bag_outlined,
                                   size: 44,
-                                  color: Color(0xFFB18100),
+                                  color: Color.fromARGB(255, 177, 129, 0),
                                 ),
                               ),
                               SizedBox(height: 20),
@@ -199,7 +201,7 @@ class MyOrdersPage extends StatelessWidget {
                                   fontSize: 11,
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: 1.8,
-                                  color: Color(0xFF9A7000),
+                                  color: Color.fromARGB(255, 154, 112, 0),
                                 ),
                               ),
                               SizedBox(height: 7),
@@ -235,7 +237,7 @@ class MyOrdersPage extends StatelessWidget {
                                       'Delivered',
                                       '$delivered',
                                       Icons.check_circle_outline_rounded,
-                                      Color(0xFF16803D),
+                                      Color.fromARGB(255, 22, 128, 61),
                                     ),
                                   ),
                                   SizedBox(width: 14),
@@ -244,7 +246,7 @@ class MyOrdersPage extends StatelessWidget {
                                       'In Progress',
                                       '$inProgress',
                                       Icons.local_shipping_outlined,
-                                      Color(0xFFB18100),
+                                      Color.fromARGB(255, 177, 129, 0),
                                     ),
                                   ),
                                 ],

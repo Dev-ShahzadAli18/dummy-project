@@ -1,12 +1,11 @@
 import 'package:dummy_project/pages/home_page.dart';
+import 'package:dummy_project/pages/profile_menu_page.dart';
 import 'package:dummy_project/pages/search_page.dart';
 import 'package:dummy_project/pages/cart_page.dart';
 import 'package:dummy_project/pages/favourites_page.dart';
-import 'package:dummy_project/pages/login_page.dart';
 import 'package:dummy_project/pages/my_orders_page.dart';
-import 'package:dummy_project/pages/profile_page.dart';
+import 'package:dummy_project/services/login_service.dart';
 import 'package:dummy_project/widgets/responsive_layout.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -59,6 +58,10 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 
+  void changeMobilePage(int index) {
+    changePage(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout.builder(
@@ -66,8 +69,29 @@ class _MainNavigationState extends State<MainNavigation> {
       builder: (context, size, constraints) {
         final isWeb = size == ResponsiveSize.desktop;
 
+        final List<Widget> pages = isWeb
+            ? [
+                Home(),
+                SearchPage(),
+                CartPage(),
+                FavouritePage(),
+                MyOrdersPage(),
+                ProfileMenuPage(),
+              ]
+            : [Home(), SearchPage(), FavouritePage(), ProfileMenuPage()];
+
+        if (selectedIndex >= pages.length) {
+          selectedIndex = 0;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && pageController.hasClients) {
+              pageController.jumpToPage(0);
+            }
+          });
+        }
+
         return Scaffold(
-          backgroundColor: Color(0xFFFAFAFA),
+          backgroundColor: Color.fromARGB(255, 250, 250, 250),
           body: Row(
             children: [
               if (isWeb) _buildSidebar(),
@@ -75,19 +99,13 @@ class _MainNavigationState extends State<MainNavigation> {
               Expanded(
                 child: PageView(
                   controller: pageController,
+                  physics: BouncingScrollPhysics(),
                   onPageChanged: (index) {
                     setState(() {
                       selectedIndex = index;
                     });
                   },
-                  children: [
-                    Home(),
-                    SearchPage(),
-                    CartPage(),
-                    FavouritePage(),
-                    MyOrdersPage(),
-                    ProfilePage(),
-                  ],
+                  children: pages,
                 ),
               ),
             ],
@@ -104,7 +122,9 @@ class _MainNavigationState extends State<MainNavigation> {
       height: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(right: BorderSide(color: Color(0xFFEEEEEE))),
+        border: Border(
+          right: BorderSide(color: Color.fromARGB(255, 238, 238, 238)),
+        ),
       ),
       child: SafeArea(
         child: Column(
@@ -188,49 +208,10 @@ class _MainNavigationState extends State<MainNavigation> {
               child: Column(
                 children: [
                   Divider(color: Colors.grey.shade200),
+
                   InkWell(
                     onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (dialogContext) => AlertDialog(
-                          title: Text('Logout'),
-                          content: Text('Are you sure you want to logout?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(dialogContext);
-                              },
-                              child: Text(
-                                'Cancel',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 87, 206, 93),
-                                ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                Navigator.pop(dialogContext);
-
-                                await FirebaseAuth.instance.signOut();
-
-                                if (!context.mounted) return;
-
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginPage(),
-                                  ),
-                                  (route) => false,
-                                );
-                              },
-                              child: Text(
-                                'Logout',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                      logout(context);
                     },
                     borderRadius: BorderRadius.circular(11),
                     child: Container(
@@ -240,7 +221,7 @@ class _MainNavigationState extends State<MainNavigation> {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: Color(0xFFFFF0F0),
+                        color: Color.fromARGB(255, 255, 240, 240),
                         borderRadius: BorderRadius.circular(11),
                       ),
                       child: Row(
@@ -289,7 +270,7 @@ class _MainNavigationState extends State<MainNavigation> {
         child: InkWell(
           onTap: () => changePage(index),
           borderRadius: BorderRadius.circular(11),
-          hoverColor: Color(0xFFFFF8E1),
+          hoverColor: Color.fromARGB(255, 255, 248, 225),
           child: Container(
             width: double.infinity,
             constraints: BoxConstraints(minHeight: 46),
@@ -299,7 +280,9 @@ class _MainNavigationState extends State<MainNavigation> {
                 Icon(
                   pageIcons[index],
                   size: 21,
-                  color: isSelected ? Color(0xFFFFC107) : Colors.grey.shade600,
+                  color: isSelected
+                      ? Color.fromARGB(255, 255, 193, 7)
+                      : Colors.grey.shade600,
                 ),
                 SizedBox(width: 13),
                 Expanded(
@@ -321,7 +304,7 @@ class _MainNavigationState extends State<MainNavigation> {
                     height: 6,
                     width: 6,
                     decoration: BoxDecoration(
-                      color: Color(0xFFFFC107),
+                      color: Color.fromARGB(255, 255, 193, 7),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -341,7 +324,7 @@ class _MainNavigationState extends State<MainNavigation> {
       ),
       child: BottomNavigationBar(
         currentIndex: selectedIndex,
-        onTap: changePage,
+        onTap: changeMobilePage,
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         elevation: 0,

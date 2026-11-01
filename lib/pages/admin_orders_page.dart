@@ -3,6 +3,7 @@ import 'package:dummy_project/services/admin_orders_service.dart'
     as admin_order_service;
 import 'package:dummy_project/widgets/detail_row.dart';
 import 'package:dummy_project/widgets/cart_widgets.dart';
+import 'package:dummy_project/widgets/responsive_layout.dart';
 import 'package:flutter/material.dart';
 
 class AdminOrdersPage extends StatelessWidget {
@@ -83,185 +84,202 @@ class AdminOrdersPage extends StatelessWidget {
             );
           });
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(14),
-            itemCount: sortedDocs.length,
-            itemBuilder: (context, index) {
-              final doc = sortedDocs[index];
-              final order = doc.data();
-              final product = Map<String, dynamic>.from(order['product'] ?? {});
-              final productName = valueOf(
-                order['productName'] ?? product['name'],
-                'Product',
-              );
+          return ResponsiveLayout.builder(
+            breakpoints: ResponsiveBreakpoints(tablet: 600, desktop: 1024),
+            builder: (context, size, constraints) {
+              final isWide = size != ResponsiveSize.mobile;
+              return ResponsiveContent(
+                maxWidth: 1100,
+                child: ListView.builder(
+                  padding: EdgeInsets.all(isWide ? 24 : 14),
+                  itemCount: sortedDocs.length,
+                  itemBuilder: (context, index) {
+                    final doc = sortedDocs[index];
+                    final order = doc.data();
+                    final product = Map<String, dynamic>.from(
+                      order['product'] ?? {},
+                    );
+                    final productName = valueOf(
+                      order['productName'] ?? product['name'],
+                      'Product',
+                    );
 
-              final image = valueOf(
-                order['productImage'] ?? product['image'],
-                '',
-              );
-              final customerName = valueOf(order['customerName']);
-              final phone = valueOf(order['customerPhone'] ?? order['phone']);
-              final email = valueOf(order['customerEmail']);
-              final address = valueOf(order['address']);
-              final customerId = valueOf(order['userId'], '');
-              final quantity = numberOf(order['quantity']).toInt();
-              final total = numberOf(order['totalPrice']);
-              final status = valueOf(order['status'], 'Pending');
-              final statuses = [
-                'Pending',
-                'Processing',
-                'Shipped',
-                'Delivered',
-                'Cancelled',
-              ];
-              final selectedStatus = statuses.contains(status)
-                  ? status
-                  : 'Pending';
-              return Card(
-                margin: EdgeInsets.only(bottom: 16),
-                elevation: 1,
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Padding(
-                  padding: EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: productImage(
-                              imageUrl: image,
-                              width: 82,
-                              height: 82,
-                              emptyIcon: Icons.image_outlined,
-                              errorIcon: Icons.broken_image,
-                              iconSize: 24,
-                              placeholderColor: Colors.grey.shade200,
-                            ),
-                          ),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                    final image = valueOf(
+                      order['productImage'] ?? product['image'],
+                      '',
+                    );
+                    final customerName = valueOf(order['customerName']);
+                    final phone = valueOf(
+                      order['customerPhone'] ?? order['phone'],
+                    );
+                    final email = valueOf(order['customerEmail']);
+                    final address = valueOf(order['address']);
+                    final customerId = valueOf(order['userId'], '');
+                    final quantity = numberOf(order['quantity']).toInt();
+                    final total = numberOf(order['totalPrice']);
+                    final status = valueOf(order['status'], 'Pending');
+                    final statuses = [
+                      'Pending',
+                      'Processing',
+                      'Shipped',
+                      'Delivered',
+                      'Cancelled',
+                    ];
+                    final selectedStatus = statuses.contains(status)
+                        ? status
+                        : 'Pending';
+                    return Card(
+                      margin: EdgeInsets.only(bottom: 16),
+                      elevation: 1,
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Padding(
+                        padding: EdgeInsets.all(14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                Text(
-                                  productName,
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: productImage(
+                                    imageUrl: image,
+                                    width: 82,
+                                    height: 82,
+                                    emptyIcon: Icons.image_outlined,
+                                    errorIcon: Icons.broken_image,
+                                    iconSize: 24,
+                                    placeholderColor: Colors.grey.shade200,
                                   ),
                                 ),
-                                SizedBox(height: 5),
-                                Text('Quantity: $quantity'),
-                                Text(
-                                  'Total: Rs. ${total.toStringAsFixed(0)}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.teal,
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        productName,
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text('Quantity: $quantity'),
+                                      Text(
+                                        'Total: Rs. ${total.toStringAsFixed(0)}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.teal,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                      Divider(height: 28),
-                      Text(
-                        'CUSTOMER DETAILS',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueGrey,
-                        ),
-                      ),
-                      SizedBox(height: 9),
-                      detailRow(
-                        icon: Icons.person_outline,
-                        value: customerName,
-                      ),
-                      detailRow(icon: Icons.email_outlined, value: email),
-                      detailRow(icon: Icons.phone_outlined, value: phone),
-                      detailRow(
-                        icon: Icons.location_on_outlined,
-                        value: address,
-                      ),
-                      SizedBox(height: 14),
-                      Text(
-                        'ORDER STATUS',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueGrey,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      DropdownButtonFormField<String>(
-                        initialValue: selectedStatus,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                        ),
-                        items: statuses.map((item) {
-                          return DropdownMenuItem<String>(
-                            value: item,
-                            child: Text(item),
-                          );
-                        }).toList(),
-                        onChanged: (newStatus) async {
-                          if (newStatus == null ||
-                              newStatus == selectedStatus) {
-                            return;
-                          }
-
-                          if (customerId.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Customer ID is missing')),
-                            );
-                            return;
-                          }
-
-                          try {
-                            await admin_order_service.updateAdminOrderStatus(
-                              orderId: doc.id,
-                              customerId: customerId,
-                              newStatus: newStatus,
-                            );
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Order status updated to $newStatus',
+                            Divider(height: 28),
+                            Text(
+                              'CUSTOMER DETAILS',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blueGrey,
+                              ),
+                            ),
+                            SizedBox(height: 9),
+                            detailRow(
+                              icon: Icons.person_outline,
+                              value: customerName,
+                            ),
+                            detailRow(icon: Icons.email_outlined, value: email),
+                            detailRow(icon: Icons.phone_outlined, value: phone),
+                            detailRow(
+                              icon: Icons.location_on_outlined,
+                              value: address,
+                            ),
+                            SizedBox(height: 14),
+                            Text(
+                              'ORDER STATUS',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blueGrey,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            DropdownButtonFormField<String>(
+                              initialValue: selectedStatus,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
                                 ),
                               ),
-                            );
-                          } catch (e) {
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Status update failed: $e'),
+                              items: statuses.map((item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                              onChanged: (newStatus) async {
+                                if (newStatus == null ||
+                                    newStatus == selectedStatus) {
+                                  return;
+                                }
+
+                                if (customerId.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Customer ID is missing'),
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                try {
+                                  await admin_order_service
+                                      .updateAdminOrderStatus(
+                                        orderId: doc.id,
+                                        customerId: customerId,
+                                        newStatus: newStatus,
+                                      );
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Order status updated to $newStatus',
+                                      ),
+                                    ),
+                                  );
+                                } catch (e) {
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Status update failed: $e'),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Order ID: ${doc.id}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade600,
                               ),
-                            );
-                          }
-                        },
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Order ID: ${doc.id}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey.shade600,
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               );
             },
