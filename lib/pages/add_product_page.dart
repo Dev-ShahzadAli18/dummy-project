@@ -1,10 +1,10 @@
 import 'dart:io' show File;
 
-import 'package:dummy_project/services/profileservices/productimageservice.dart';
-import 'package:dummy_project/services/updatedata.dart';
-import 'package:dummy_project/widgets/button.dart';
-import 'package:dummy_project/widgets/customOrderSwitch.dart';
-import 'package:dummy_project/widgets/textfield.dart';
+import 'package:dummy_project/services/profileservices/product_image_service.dart';
+import 'package:dummy_project/services/data_update_service.dart';
+import 'package:dummy_project/widgets/buttons.dart';
+import 'package:dummy_project/widgets/order_availability_switch.dart';
+import 'package:dummy_project/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 
 class AddProductPage extends StatefulWidget {
@@ -201,12 +201,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 'Tap the image to select or change it.',
                 style: TextStyle(color: Colors.grey),
               ),
-              SizedBox(height: 10),
-              Text(
-                'Paste a direct image URL from Google or another image hosting website.',
-                style: TextStyle(color: Colors.black),
-              ),
-              SizedBox(height: 10),
+
               Text(
                 'Category',
                 style: TextStyle(

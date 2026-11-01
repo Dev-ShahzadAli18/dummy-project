@@ -1,5 +1,6 @@
-import 'package:dummy_project/services/updatedata.dart' as profileFunctions;
-import 'package:dummy_project/widgets/button.dart';
+import 'package:dummy_project/services/data_update_service.dart' as profileFunctions;
+import 'package:dummy_project/widgets/buttons.dart';
+import 'package:dummy_project/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 
 class ProfileDetailPage extends StatefulWidget {
@@ -64,12 +65,13 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 12),
-            TextField(
+            customTextField(
               controller: controller,
               readOnly: isRole,
               keyboardType: widget.field == 'Phone'
                   ? TextInputType.phone
                   : TextInputType.text,
+              hint: 'Enter ${widget.title}',
               decoration: InputDecoration(
                 hintText: 'Enter ${widget.title}',
                 filled: true,

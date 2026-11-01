@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dummy_project/pages/prodcutdetail.dart';
-import 'package:dummy_project/services/loginservice.dart';
-import 'package:dummy_project/widgets/button.dart';
+import 'package:dummy_project/pages/product_detail_page.dart';
+import 'package:dummy_project/services/login_service.dart';
+import 'package:dummy_project/widgets/buttons.dart';
+import 'package:dummy_project/widgets/cart_widgets.dart';
 import 'package:flutter/material.dart';
 
 class Allproduct extends StatefulWidget {
@@ -96,28 +97,15 @@ class _AllproductState extends State<Allproduct> {
                               SizedBox(
                                 height: 120,
                                 width: 120,
-                                child: imageUrl.isNotEmpty
-                                    ? Image.network(
-                                        imageUrl,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                              return Container(
-                                                color: Colors.grey.shade200,
-                                                child: Icon(
-                                                  Icons.broken_image,
-                                                  size: 40,
-                                                ),
-                                              );
-                                            },
-                                      )
-                                    : Container(
-                                        color: Colors.grey.shade200,
-                                        child: Icon(
-                                          Icons.image_not_supported,
-                                          size: 40,
-                                        ),
-                                      ),
+                                child: productImage(
+                                  imageUrl: imageUrl,
+                                  width: 120,
+                                  height: 120,
+                                  emptyIcon: Icons.image_not_supported,
+                                  errorIcon: Icons.broken_image,
+                                  iconSize: 40,
+                                  placeholderColor: Colors.grey.shade200,
+                                ),
                               ),
                               Expanded(
                                 child: Padding(
@@ -127,8 +115,7 @@ class _AllproductState extends State<Allproduct> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        productData['name']?.toString() ??
-                                            'Name missing',
+                                        productData['name']?.toString() ?? '',
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(

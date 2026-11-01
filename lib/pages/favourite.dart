@@ -1,9 +1,12 @@
-import 'package:dummy_project/widgets/button.dart';
-import 'package:dummy_project/pages/prodcutdetail.dart';
-import 'package:dummy_project/services/favouriteservice.dart'
+import 'package:dummy_project/services/favourites_service.dart'
     as favorite_functions;
+import 'package:dummy_project/widgets/buttons.dart';
+import 'package:dummy_project/pages/product_detail_page.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:dummy_project/widgets/responsive_layout.dart';
+import 'package:dummy_project/widgets/cartwidget.dart';
 
 class FavouritePage extends StatefulWidget {
   const FavouritePage({super.key});
@@ -17,198 +20,236 @@ class _FavouritePageState extends State<FavouritePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: EdgeInsets.all(15),
-        child: Column(
-          children: [
-            SizedBox(height: 25),
-            Row(
-              children: [
-                customIconButton(
-                  height: 40,
-                  width: 40,
-                  icon: Icons.arrow_back,
-                  onTap: () {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  },
-                ),
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      'Favourites',
-                      style: TextStyle(
-                        letterSpacing: 1.5,
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: ResponsiveLayout.builder(
+          breakpoints: ResponsiveBreakpoints(
+            tablet: 600,
+            tabletInclusive: false,
+          ),
+          builder: (context, size, constraints) {
+            final isWide = size != ResponsiveSize.mobile;
+
+            return ResponsiveContent(
+              maxWidth: isWide ? 1000 : constraints.maxWidth,
+              padding: EdgeInsets.symmetric(horizontal: isWide ? 30 : 15),
+              child: Column(
+                children: [
+                  SizedBox(height: 25),
+
+                  Row(
+                    children: [
+                      customIconButton(
+                        height: 40,
+                        width: 40,
+                        icon: Icons.arrow_back,
+                        onTap: () {
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                        },
                       ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 40),
-              ],
-            ),
-            SizedBox(height: 15),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: favorite_functions.getFavorites(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'Error loading favourites',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    );
-                  }
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  final favorites = snapshot.data?.docs ?? [];
-                  if (favorites.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.favorite_outline,
-                            size: 70,
-                            color: Colors.grey.shade300,
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            'No Favourites',
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Favourites',
                             style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5,
                               color: Colors.black,
+                              fontSize: isWide ? 22 : 18,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Add products to your favourites',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
+                        ),
                       ),
-                    );
-                  }
-                  return ListView.builder(
-                    itemCount: favorites.length,
-                    itemBuilder: (context, index) {
-                      final doc = favorites[index];
-                      final Map<String, dynamic> product = {
-                        ...doc.data(),
-                        'id': doc.id,
-                      };
-                      final name = product['name']?.toString() ?? 'No Name';
-                      final image = product['image']?.toString() ?? '';
-                      final price = product['price'] ?? 0;
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ProductDetail(product: product, role: 'User'),
+                      SizedBox(width: 40),
+                    ],
+                  ),
+
+                  SizedBox(height: 15),
+
+                  Expanded(
+                    child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: favorite_functions.getFavorites(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              'Error loading favourites',
+                              style: TextStyle(color: Colors.red),
                             ),
                           );
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(bottom: 15),
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  image,
-                                  height: 100,
-                                  width: 90,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      height: 100,
-                                      width: 90,
-                                      color: Colors.grey.shade200,
-                                      child: Icon(Icons.image_not_supported),
-                                    );
-                                  },
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+
+                        final favorites = snapshot.data?.docs ?? [];
+
+                        if (favorites.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.favorite_outline,
+                                  size: 70,
+                                  color: Colors.grey.shade300,
                                 ),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                SizedBox(height: 15),
+                                Text(
+                                  'No Favourites',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  'Add products to your favourites',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          itemCount: favorites.length,
+                          padding: EdgeInsets.only(top: 5),
+                          itemBuilder: (context, index) {
+                            final doc = favorites[index];
+
+                            final Map<String, dynamic> product = {
+                              ...doc.data(),
+                              'id': doc.id,
+                            };
+
+                            final name =
+                                product['name']?.toString() ?? 'No Name';
+                            final image = product['image']?.toString() ?? '';
+                            final price = product['price'] ?? 0;
+
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProductDetail(
+                                      product: product,
+                                      role: 'User',
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(bottom: 15),
+                                padding: EdgeInsets.all(isWide ? 15 : 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Row(
                                   children: [
-                                    Text(
-                                      name,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: productImage(
+                                        imageUrl: image,
+                                        height: isWide ? 120 : 100,
+                                        width: isWide ? 110 : 90,
+                                        emptyIcon: Icons.image_not_supported,
+                                        iconSize: 24,
+                                        placeholderColor: Colors.grey.shade200,
                                       ),
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Rs. $price',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
+
+                                    SizedBox(width: 12),
+
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            name,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: isWide ? 18 : 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            'Rs. $price',
+                                            style: TextStyle(
+                                              fontSize: isWide ? 17 : 15,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            'View product details',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'View product details',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600,
+
+                                    IconButton(
+                                      onPressed: () async {
+                                        try {
+                                          await favorite_functions
+                                              .removeFavorite(
+                                                productId: doc.id,
+                                              );
+
+                                          if (!context.mounted) return;
+
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Removed from favourites',
+                                              ),
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          if (!context.mounted) return;
+
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(e.toString()),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      icon: Icon(
+                                        Icons.favorite,
+                                        color: Colors.red,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              IconButton(
-                                onPressed: () async {
-                                  try {
-                                    await favorite_functions.removeFavorite(
-                                      productId: doc.id,
-                                    );
-                                    if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Removed from favourites',
-                                        ),
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    if (!context.mounted) return;
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(e.toString())),
-                                    );
-                                  }
-                                },
-                                icon: Icon(Icons.favorite, color: Colors.red),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

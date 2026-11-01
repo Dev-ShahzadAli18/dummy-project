@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dummy_project/services/adminorderservice.dart'
+import 'package:dummy_project/services/admin_orders_service.dart'
     as admin_order_service;
-import 'package:dummy_project/widgets/detailrow.dart';
+import 'package:dummy_project/widgets/detail_row.dart';
+import 'package:dummy_project/widgets/cart_widgets.dart';
 import 'package:flutter/material.dart';
 
 class AdminOrdersPage extends StatelessWidget {
@@ -133,25 +134,15 @@ class AdminOrdersPage extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: image.isEmpty
-                                ? Container(
-                                    width: 82,
-                                    height: 82,
-                                    color: Colors.grey.shade200,
-                                    child: Icon(Icons.image_outlined),
-                                  )
-                                : Image.network(
-                                    image,
-                                    width: 82,
-                                    height: 82,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
-                                      width: 82,
-                                      height: 82,
-                                      color: Colors.grey.shade200,
-                                      child: Icon(Icons.broken_image),
-                                    ),
-                                  ),
+                            child: productImage(
+                              imageUrl: image,
+                              width: 82,
+                              height: 82,
+                              emptyIcon: Icons.image_outlined,
+                              errorIcon: Icons.broken_image,
+                              iconSize: 24,
+                              placeholderColor: Colors.grey.shade200,
+                            ),
                           ),
                           SizedBox(width: 12),
                           Expanded(

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dummy_project/pages/Navigation.dart';
-import 'package:dummy_project/pages/admin.dart';
-import 'package:dummy_project/pages/login.dart';
+import 'package:dummy_project/pages/main_navigation.dart';
+import 'package:dummy_project/pages/admin_dashboard_page.dart';
+import 'package:dummy_project/pages/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -10,10 +10,10 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 String userRole = 'User';
 
-Future login(String email, String Password, BuildContext context) async {
+Future login(String email, String password, BuildContext context) async {
   final user = await _auth.signInWithEmailAndPassword(
     email: email,
-    password: Password,
+    password: password,
   );
 
   final id = user.user!.uid;
@@ -46,6 +46,7 @@ Future createaccount(
   String confirmPassword,
   String userrole,
   String phone,
+  int age,
 ) async {
   try {
     final user = await _auth.createUserWithEmailAndPassword(
@@ -60,6 +61,7 @@ Future createaccount(
         "Email": email.trim(),
         "Phone": phone,
         "role": userrole,
+        'Age': age,
         "CreatedDate": Timestamp.now(),
       });
 

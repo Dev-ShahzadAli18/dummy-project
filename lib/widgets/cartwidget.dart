@@ -1,5 +1,49 @@
 import 'package:flutter/material.dart';
 
+Widget productImage({
+  required String imageUrl,
+  double? width,
+  double? height,
+  BoxFit fit = BoxFit.cover,
+  IconData emptyIcon = Icons.image_not_supported_outlined,
+  IconData? errorIcon,
+  double iconSize = 35,
+  Color iconColor = Colors.grey,
+  Color? emptyIconColor,
+  Color? errorIconColor,
+  Color? placeholderColor,
+}) {
+  Widget placeholder(IconData icon, Color? color) {
+    final child = Icon(icon, size: iconSize, color: color ?? iconColor);
+
+    if (placeholderColor == null) {
+      return Center(child: child);
+    }
+
+    return Container(
+      width: width,
+      height: height,
+      color: placeholderColor,
+      alignment: Alignment.center,
+      child: child,
+    );
+  }
+
+  if (imageUrl.isEmpty) {
+    return placeholder(emptyIcon, emptyIconColor);
+  }
+
+  return Image.network(
+    imageUrl,
+    width: width,
+    height: height,
+    fit: fit,
+    errorBuilder: (context, error, stackTrace) {
+      return placeholder(errorIcon ?? emptyIcon, errorIconColor);
+    },
+  );
+}
+
 Widget cartEmptyIcon() {
   return Container(
     height: 130,
@@ -32,27 +76,14 @@ Widget cartPageTitle({required String title, required String subtitle}) {
 Widget cartProductImage({required String image}) {
   return ClipRRect(
     borderRadius: BorderRadius.circular(12),
-    child: image.isNotEmpty
-        ? Image.network(
-            image,
-            width: 100,
-            height: 115,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                width: 100,
-                height: 115,
-                color: Colors.grey.shade200,
-                child: Icon(Icons.image_not_supported_outlined, size: 35),
-              );
-            },
-          )
-        : Container(
-            width: 100,
-            height: 115,
-            color: Colors.grey.shade200,
-            child: Icon(Icons.shopping_bag_outlined, size: 35),
-          ),
+    child: productImage(
+      imageUrl: image,
+      width: 100,
+      height: 115,
+      emptyIcon: Icons.shopping_bag_outlined,
+      errorIcon: Icons.image_not_supported_outlined,
+      placeholderColor: Colors.grey.shade200,
+    ),
   );
 }
 

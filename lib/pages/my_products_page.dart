@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dummy_project/pages/prodcutdetail.dart';
+import 'package:dummy_project/pages/product_detail_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:dummy_project/widgets/cart_widgets.dart';
 import 'package:flutter/material.dart';
 
 class MyProductPage extends StatelessWidget {
@@ -87,27 +88,15 @@ class MyProductPage extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: image.toString().isNotEmpty
-                            ? Image.network(
-                                image.toString(),
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: 100,
-                                    height: 100,
-                                    color: Colors.grey.shade200,
-                                    child: Icon(Icons.broken_image),
-                                  );
-                                },
-                              )
-                            : Container(
-                                width: 100,
-                                height: 100,
-                                color: Colors.grey.shade200,
-                                child: Icon(Icons.shopping_bag_outlined),
-                              ),
+                        child: productImage(
+                          imageUrl: image.toString(),
+                          width: 100,
+                          height: 100,
+                          emptyIcon: Icons.shopping_bag_outlined,
+                          errorIcon: Icons.broken_image,
+                          iconSize: 24,
+                          placeholderColor: Colors.grey.shade200,
+                        ),
                       ),
                       SizedBox(width: 12),
                       Expanded(

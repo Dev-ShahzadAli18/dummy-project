@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dummy_project/pages/prodcutdetail.dart';
-import 'package:dummy_project/services/loginservice.dart';
-import 'package:dummy_project/widgets/button.dart';
-import 'package:dummy_project/widgets/textfield.dart';
+import 'package:dummy_project/pages/product_detail_page.dart';
+import 'package:dummy_project/services/login_service.dart';
+import 'package:dummy_project/widgets/buttons.dart';
+import 'package:dummy_project/widgets/custom_text_field.dart';
+import 'package:dummy_project/widgets/responsive_layout.dart';
+import 'package:dummy_project/widgets/cart_widgets.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
@@ -33,11 +35,36 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: EdgeInsets.all(15),
+      body: ResponsiveLayout.builder(
+        breakpoints: ResponsiveBreakpoints(tablet: 600, tabletInclusive: false),
+        builder: (context, size, constraints) {
+          final isWide = size != ResponsiveSize.mobile;
+
+          return _buildSearchPage(
+            horizontalPadding: isWide ? 40 : 15,
+            contentWidth: isWide ? 800 : constraints.maxWidth,
+            titleSize: isWide ? 24 : 20,
+            searchTopSpacing: isWide ? 50 : 35,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSearchPage({
+    required double horizontalPadding,
+    required double contentWidth,
+    required double titleSize,
+    required double searchTopSpacing,
+  }) {
+    return SizedBox.expand(
+      child: ResponsiveContent(
+        maxWidth: contentWidth,
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
         child: Column(
           children: [
             SizedBox(height: 25),
+
             Row(
               children: [
                 customIconButton(
@@ -50,18 +77,24 @@ class _SearchPageState extends State<SearchPage> {
                     }
                   },
                 ),
-                SizedBox(width: 100),
-                Text(
-                  'Search',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      'Search',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: titleSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
+                SizedBox(width: 40),
               ],
             ),
-            SizedBox(height: 50),
+
+            SizedBox(height: searchTopSpacing),
+
             customTextField(
               controller: searchController,
               hint: 'Search here...',
@@ -76,7 +109,9 @@ class _SearchPageState extends State<SearchPage> {
                   : null,
               ontap: () {},
             ),
+
             SizedBox(height: 15),
+
             Expanded(
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
@@ -92,6 +127,7 @@ class _SearchPageState extends State<SearchPage> {
                   }
 
                   final products = snapshot.data?.docs ?? [];
+
                   final query = searchController.text.trim().toLowerCase();
 
                   if (query.isEmpty) {
@@ -122,11 +158,14 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     );
                   }
+
                   final results = products.where((doc) {
                     final data = doc.data();
                     final name = (data['name'] ?? '').toString().toLowerCase();
+
                     return name.contains(query);
                   }).toList();
+
                   if (results.isEmpty) {
                     return Center(
                       child: Column(
@@ -139,13 +178,13 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     );
                   }
+
                   return ListView.builder(
                     itemCount: results.length,
                     itemBuilder: (context, index) {
                       final productData = results[index].data();
-                      productData['id'] = results[index].id;
 
-                      final imageUrl = productData['image']?.toString() ?? '';
+                      productData['id'] = results[index].id;
 
                       return GestureDetector(
                         onTap: () {
@@ -159,37 +198,21 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                           );
                         },
-
                         child: Card(
                           color: Colors.white,
                           margin: EdgeInsets.only(bottom: 12),
                           child: ListTile(
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child:
-                                  productData['image'] != null &&
-                                      productData['image'].toString().isNotEmpty
-                                  ? Image.network(
-                                      productData['image'].toString(),
-                                      height: 60,
-                                      width: 60,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                            return Container(
-                                              height: 60,
-                                              width: 60,
-                                              color: Colors.grey.shade200,
-                                              child: Icon(Icons.image),
-                                            );
-                                          },
-                                    )
-                                  : Container(
-                                      height: 60,
-                                      width: 60,
-                                      color: Colors.grey.shade200,
-                                      child: Icon(Icons.image),
-                                    ),
+                              child: productImage(
+                                imageUrl:
+                                    productData['image']?.toString() ?? '',
+                                height: 60,
+                                width: 60,
+                                emptyIcon: Icons.image,
+                                iconSize: 24,
+                                placeholderColor: Colors.grey.shade200,
+                              ),
                             ),
                             title: Text(
                               productData['name']?.toString() ??
